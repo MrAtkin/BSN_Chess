@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Chess Swiss Championship</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --container-bg: white;
+            --match-bg: #2c3e50;
+            --match-border: #1a252f;
+            --win-bg: #27ae60;
+            --draw-bg: #2980b9;
+            --score-bg: #111;
+        }
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --container-bg: #1e1e1e;
+            --match-bg: #2a2a2a;
+            --match-border: #444;
+            --win-bg: #b58500;
+            --draw-bg: #3b5998;
+        }
+
+        body { font-family: Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; transition: 0.3s; }
+        .container { max-width: 1400px; margin: 0 auto; background: var(--container-bg); padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; }
+        .subtitle { text-align: center; color: #888; margin-top: -10px; margin-bottom: 25px; font-size: 14px; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        select, button { padding: 10px; border-radius: 4px; font-size: 16px; cursor: pointer; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { padding: 10px; text-align: center; border-bottom: 1px solid var(--match-border); }
+        th { background-color: var(--match-bg); color: white; }
+
+        .season-view { display: none; }
+        .season-view.active { display: block; }
+
+        /* LIQUIPEDIA-STYLE STANDINGS & HOUSE POINTS */
+        .lp-standings-wrapper { max-width: 900px; margin: 0 auto 40px auto; background: var(--match-bg); border: 1px solid var(--match-border); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; }
+        .lp-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+        .lp-table th { background: #111; color: #aaa; font-size: 13px; font-weight: bold; padding: 12px 14px; border-bottom: 1px solid var(--match-border); text-align: left; }
+        .lp-table th.col-center, .lp-table td.col-center { text-align: center; }
+        .lp-table th.col-pts, .lp-table td.col-pts { text-align: right; font-weight: bold; }
+        .lp-table td { padding: 12px 14px; border-bottom: 1px solid #111; font-size: 14px; text-align: left; color: white; }
+
+        .lp-row-1 { background: rgba(212, 175, 55, 0.25); border-left: 4px solid #d4af37; }
+        .lp-row-2 { background: rgba(160, 180, 190, 0.25); border-left: 4px solid #9ab0bc; }
+        .lp-row-3 { background: rgba(165, 115, 65, 0.25); border-left: 4px solid #b8864d; }
+        .lp-row-4 { border-left: 4px solid transparent; }
+        .lp-row-hidden { display: none; border-left: 4px solid transparent; background: var(--match-bg); }
+        .lp-row-hidden.expanded { display: table-row; }
+
+        .place-badge { display: inline-block; width: 26px; height: 24px; line-height: 24px; border-radius: 4px; font-weight: bold; font-size: 13px; color: #fff; text-align: center; }
+        .badge-1 { background: #b59410; }
+        .badge-2 { background: #5a6f78; }
+        .badge-3 { background: #7d5a32; }
+        .badge-ghost { background: #444; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+
+        .lp-player-name { color: #66b2ff; font-weight: bold; }
+        .lp-username { color: #ccc; font-family: monospace; font-size: 13px; }
+
+        .lp-toggle-bar { background: #111; text-align: center; padding: 10px; color: #66b2ff; font-weight: bold; font-size: 13px; cursor: pointer; user-select: none; }
+        .lp-toggle-bar:hover { background: #1c1c1c; }
+
+        /* SWISS ROUNDS & MATCH CARDS */
+        .rounds-container { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; margin-bottom: 40px; }
+        .round-column { display: flex; flex-direction: column; gap: 15px; min-width: 300px; flex: 1; }
+        .round-column h3 { text-align: center; font-size: 15px; color: #888; text-transform: uppercase; margin: 0 0 5px 0; }
+
+        .match-card { background: var(--match-bg); border: 1px solid var(--match-border); border-radius: 6px; overflow: hidden; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .match-card.pending-card { border: 2px solid #d4af37; }
+        .match-header { background: #111; font-size: 11px; padding: 5px 10px; display: flex; justify-content: space-between; color: #aaa; letter-spacing: 0.5px; }
+        .live-tag { color: #f1c40f; font-weight: bold; }
+
+        .player-row { display: flex; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid #111; font-size: 14px; align-items: center; }
+        .player-row:last-child { border-bottom: none; }
+        .player-row.winner { background-color: var(--win-bg); font-weight: bold; }
+        .player-row.draw { background-color: var(--draw-bg); }
+
+        .piece-icon { display: inline-block; width: 18px; text-align: center; margin-right: 6px; font-size: 15px; }
+        .handle-sub { color: #bbb; font-size: 12px; font-family: monospace; margin-left: 6px; }
+        .score-pill { background: var(--score-bg); padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+    </style>
+    <script>
+        function updateView() {
+            var season = document.getElementById('seasonSelect').value;
+            document.querySelectorAll('.season-view').forEach(el => el.classList.remove('active'));
+            var targetElement = document.getElementById('view-' + season.replace(/\s+/g, '-'));
+            if(targetElement) targetElement.classList.add('active');
+            sessionStorage.setItem('chessSelectedSeason', season);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('chessDarkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        function toggleStandings(safeSeason, maxPlace) {
+            var rows = document.querySelectorAll('.extra-row-' + safeSeason);
+            var btn = document.getElementById('toggle-btn-' + safeSeason);
+            if (!rows.length || !btn) return;
+            var isExpanded = rows[0].classList.contains('expanded');
+            rows.forEach(r => {
+                if (isExpanded) r.classList.remove('expanded');
+                else r.classList.add('expanded');
+            });
+            var newState = !isExpanded;
+            btn.innerHTML = newState ? ('place 5 to ' + maxPlace + ' &#94;') : ('place 5 to ' + maxPlace + ' &#8964;');
+            sessionStorage.setItem('chessExpandStandings_' + safeSeason, newState);
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('chessDarkMode') === 'true') document.body.classList.add('dark-mode');
+
+            var savedSeason = sessionStorage.getItem('chessSelectedSeason');
+            if (savedSeason) {
+                var select = document.getElementById('seasonSelect');
+                for (var i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value === savedSeason) {
+                        select.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            updateView();
+
+            document.querySelectorAll('[data-season-standings]').forEach(el => {
+                var s = el.getAttribute('data-season-standings');
+                var maxP = el.getAttribute('data-max-place');
+                if (sessionStorage.getItem('chessExpandStandings_' + s) === 'true') {
+                    toggleStandings(s, maxP);
+                }
+            });
+
+            setTimeout(function() { location.reload(); }, 60000);
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="controls">
+        <div>
+            <h1 style="margin: 0; text-align: left;">School Chess Swiss Tracker</h1>
+            <div class="subtitle" style="text-align: left; margin: 4px 0 0 0;">Format: 5|2 Blitz &bull; Challenge Your Assigned Opponent on Chess.com</div>
+        </div>
+        <div>
+            <select id="seasonSelect" onchange="updateView()">
+                <option value="Autumn 2026">Autumn 2026</option>
+            </select>
+            <button onclick="toggleDarkMode()">🌙</button>
+        </div>
+    </div>
+<div id="view-Autumn-2026" class="season-view active"><h2>Swiss Standings &amp; House Points</h2><div class="lp-standings-wrapper" data-season-standings="Autumn-2026" data-max-place="6">
+        <table class="lp-table">
+            <thead>
+                <tr>
+                    <th class="col-center" style="width: 65px;">Place</th>
+                    <th>Player</th>
+                    <th>Chess.com</th>
+                    <th class="col-center">W - D - L</th>
+                    <th class="col-center">Pts</th>
+                    <th class="col-center" title="Buchholz Tiebreaker (Sum of Opponents' Scores)">Buchholz</th>
+                    <th class="col-pts">Reward</th>
+                </tr>
+            </thead>
+            <tbody>
+        
+                <tr class="lp-row-4">
+                    <td class="col-center"><span class="badge-ghost">STAFF</span></td>
+                    <td><span class="lp-player-name">Mr. Atkin</span></td>
+                    <td><span class="lp-username">@Mr_Atkin</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">-</td>
+                </tr>
+            
+                <tr class="lp-row-1">
+                    <td class="col-center"><span class="place-badge badge-1">1</span></td>
+                    <td><span class="lp-player-name">test</span></td>
+                    <td><span class="lp-username">@test</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">20 House Points</td>
+                </tr>
+            
+                <tr class="lp-row-2">
+                    <td class="col-center"><span class="place-badge badge-2">2</span></td>
+                    <td><span class="lp-player-name">test2</span></td>
+                    <td><span class="lp-username">@test</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">15 House Points</td>
+                </tr>
+            
+                <tr class="lp-row-3">
+                    <td class="col-center"><span class="place-badge badge-3">3</span></td>
+                    <td><span class="lp-player-name">test3</span></td>
+                    <td><span class="lp-username">@test3</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">10 House Points</td>
+                </tr>
+            
+                <tr class="lp-row-4">
+                    <td class="col-center">4</td>
+                    <td><span class="lp-player-name">test4</span></td>
+                    <td><span class="lp-username">@test4</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">5 House Points</td>
+                </tr>
+            
+                <tr class="lp-row-hidden extra-row-Autumn-2026">
+                    <td class="col-center">5</td>
+                    <td><span class="lp-player-name">test5</span></td>
+                    <td><span class="lp-username">@test5</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">4 House Points</td>
+                </tr>
+            
+                <tr class="lp-row-hidden extra-row-Autumn-2026">
+                    <td class="col-center">6</td>
+                    <td><span class="lp-player-name">test6</span></td>
+                    <td><span class="lp-username">@test6</span></td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">3 House Points</td>
+                </tr>
+            </tbody></table><div id="toggle-btn-Autumn-2026" class="lp-toggle-bar" onclick="toggleStandings('Autumn-2026', 6)">place 5 to 6 &#8964;</div></div><h2>Lunch Pairings &amp; Round History</h2><p style="text-align: center; color: #888;">No rounds generated yet. Pairings will appear here at the start of lunch!</p><h2>Registered Roster</h2><table><tr><th>Student Name</th><th>Chess.com Username</th><th>Status</th></tr><tr><td><strong>Mr. Atkin</strong></td><td>@Mr_Atkin</td><td>Active</td></tr><tr><td><strong>test</strong></td><td>@test</td><td>Active</td></tr><tr><td><strong>test2</strong></td><td>@test</td><td>Active</td></tr><tr><td><strong>test3</strong></td><td>@test3</td><td>Active</td></tr><tr><td><strong>test4</strong></td><td>@test4</td><td>Active</td></tr><tr><td><strong>test5</strong></td><td>@test5</td><td>Active</td></tr><tr><td><strong>test6</strong></td><td>@test6</td><td>Active</td></tr></table></div></div></body></html>

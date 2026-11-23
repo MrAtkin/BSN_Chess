@@ -40,7 +40,7 @@
         .season-view.active { display: block; }
 
         /* LIQUIPEDIA-STYLE STANDINGS & HOUSE POINTS */
-        .lp-standings-wrapper { max-width: 900px; margin: 0 auto 40px auto; background: var(--match-bg); border: 1px solid var(--match-border); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; }
+        .lp-standings-wrapper { max-width: 850px; margin: 0 auto 40px auto; background: var(--match-bg); border: 1px solid var(--match-border); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); color: white; }
         .lp-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
         .lp-table th { background: #111; color: #aaa; font-size: 13px; font-weight: bold; padding: 12px 14px; border-bottom: 1px solid var(--match-border); text-align: left; }
         .lp-table th.col-center, .lp-table td.col-center { text-align: center; }
@@ -61,14 +61,13 @@
         .badge-ghost { background: #444; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
 
         .lp-player-name { color: #66b2ff; font-weight: bold; }
-        .lp-username { color: #ccc; font-family: monospace; font-size: 13px; }
 
         .lp-toggle-bar { background: #111; text-align: center; padding: 10px; color: #66b2ff; font-weight: bold; font-size: 13px; cursor: pointer; user-select: none; }
         .lp-toggle-bar:hover { background: #1c1c1c; }
 
         /* SWISS ROUNDS & MATCH CARDS */
         .rounds-container { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; margin-bottom: 40px; }
-        .round-column { display: flex; flex-direction: column; gap: 15px; min-width: 300px; flex: 1; }
+        .round-column { display: flex; flex-direction: column; gap: 15px; min-width: 280px; flex: 1; }
         .round-column h3 { text-align: center; font-size: 15px; color: #888; text-transform: uppercase; margin: 0 0 5px 0; }
 
         .match-card { background: var(--match-bg); border: 1px solid var(--match-border); border-radius: 6px; overflow: hidden; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
@@ -82,7 +81,6 @@
         .player-row.draw { background-color: var(--draw-bg); }
 
         .piece-icon { display: inline-block; width: 18px; text-align: center; margin-right: 6px; font-size: 15px; }
-        .handle-sub { color: #bbb; font-size: 12px; font-family: monospace; margin-left: 6px; }
         .score-pill { background: var(--score-bg); padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; }
     </style>
     <script>
@@ -145,7 +143,7 @@
     <div class="controls">
         <div>
             <h1 style="margin: 0; text-align: left;">School Chess Swiss Tracker</h1>
-            <div class="subtitle" style="text-align: left; margin: 4px 0 0 0;">Format: 5|2 Blitz &bull; Challenge Your Assigned Opponent on Chess.com</div>
+            <div class="subtitle" style="text-align: left; margin: 4px 0 0 0;">Format: 5|2 Blitz &bull; Over-the-Board School Chess</div>
         </div>
         <div>
             <select id="seasonSelect" onchange="updateView()">
@@ -161,7 +159,6 @@
                     <th class="col-center" style="width: 60px;">Place</th>
                     <th>Player</th>
                     <th class="col-center">Class</th>
-                    <th>Chess.com</th>
                     <th class="col-center">W - D - L</th>
                     <th class="col-center">Pts</th>
                     <th class="col-center" title="Buchholz Tiebreaker (Sum of Opponents' Scores)">Buchholz</th>
@@ -172,9 +169,8 @@
         
                 <tr class="lp-row-1">
                     <td class="col-center"><span class="place-badge badge-1">1</span></td>
-                    <td><span class="lp-player-name">Jaeah Jung</span></td>
-                    <td class="col-center">9NA</td>
-                    <td><span class="lp-username">@Kaeah17</span></td>
+                    <td><span class="lp-player-name">Emile winne</span></td>
+                    <td class="col-center">12CK</td>
                     <td class="col-center">0 - 0 - 0</td>
                     <td class="col-center"><strong>0.0</strong></td>
                     <td class="col-center">0.0</td>
@@ -183,9 +179,8 @@
             
                 <tr class="lp-row-2">
                     <td class="col-center"><span class="place-badge badge-2">2</span></td>
-                    <td><span class="lp-player-name">Kris Diao</span></td>
-                    <td class="col-center">11TZ</td>
-                    <td><span class="lp-username">@magnesium_block</span></td>
+                    <td><span class="lp-player-name">Jaeah Jung</span></td>
+                    <td class="col-center">9NA</td>
                     <td class="col-center">0 - 0 - 0</td>
                     <td class="col-center"><strong>0.0</strong></td>
                     <td class="col-center">0.0</td>
@@ -194,12 +189,21 @@
             
                 <tr class="lp-row-3">
                     <td class="col-center"><span class="place-badge badge-3">3</span></td>
-                    <td><span class="lp-player-name">Mark Kondrashov</span></td>
-                    <td class="col-center">9NA</td>
-                    <td><span class="lp-username">@MAKYKONDRASHOV</span></td>
+                    <td><span class="lp-player-name">Kris Diao</span></td>
+                    <td class="col-center">11TZ</td>
                     <td class="col-center">0 - 0 - 0</td>
                     <td class="col-center"><strong>0.0</strong></td>
                     <td class="col-center">0.0</td>
                     <td class="col-pts">10 House Points</td>
                 </tr>
-            </tbody></table></div><h2>Lunch Pairings &amp; Round History</h2><p style="text-align: center; color: #888;">No rounds generated yet. Pairings will appear here at the start of lunch!</p><h2>Registered Roster</h2><table><tr><th>Student Name</th><th>Class</th><th>Chess.com Username</th><th>Status</th></tr><tr><td><strong>Jaeah Jung</strong></td><td>9NA</td><td>@Kaeah17</td><td>Active</td></tr><tr><td><strong>Kris Diao</strong></td><td>11TZ</td><td>@magnesium_block</td><td>Active</td></tr><tr><td><strong>Mark Kondrashov</strong></td><td>9NA</td><td>@MAKYKONDRASHOV</td><td>Active</td></tr></table></div></div></body></html>
+            
+                <tr class="lp-row-4">
+                    <td class="col-center">4</td>
+                    <td><span class="lp-player-name">Mark Kondrashov</span></td>
+                    <td class="col-center">9NA</td>
+                    <td class="col-center">0 - 0 - 0</td>
+                    <td class="col-center"><strong>0.0</strong></td>
+                    <td class="col-center">0.0</td>
+                    <td class="col-pts">5 House Points</td>
+                </tr>
+            </tbody></table></div><h2>Lunch Board Pairings &amp; Round History</h2><p style="text-align: center; color: #888;">No rounds generated yet. Board pairings will appear here at the start of lunch!</p><h2>Registered Roster</h2><table><tr><th>Student Name</th><th>Class</th><th>Status</th></tr><tr><td><strong>Emile winne</strong></td><td>12CK</td><td>Active</td></tr><tr><td><strong>Jaeah Jung</strong></td><td>9NA</td><td>Active</td></tr><tr><td><strong>Kris Diao</strong></td><td>11TZ</td><td>Active</td></tr><tr><td><strong>Mark Kondrashov</strong></td><td>9NA</td><td>Active</td></tr></table></div></div></body></html>
